@@ -5,7 +5,6 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
-import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -13,6 +12,7 @@ import android.widget.MediaController;
 import android.widget.Toast;
 import android.widget.VideoView;
 
+import com.afollestad.materialcamera.MaterialCamera;
 import com.franklinho.vidtrain_android.R;
 
 import java.io.File;
@@ -23,6 +23,8 @@ import butterknife.ButterKnife;
 public class DiscoveryActivity extends AppCompatActivity {
     public final String APP_TAG = "VidTrain";
     public String videoFileName = "myvideo.mp4";
+    private final static int CAMERA_RQ = 6969;
+
 
     @Bind(R.id.vvPreview) VideoView vvPreview;
     private static final int REQUEST_CAMERA = 0;
@@ -50,16 +52,20 @@ public class DiscoveryActivity extends AppCompatActivity {
     }
 
     public void startCameraActivity() {
-//        Intent startCustomCameraIntent = new Intent(this, CameraActivity.class);
-//        startActivityForResult(startCustomCameraIntent, REQUEST_CAMERA);
 
-        File mediaFile =
-                new File(
-                        getExternalFilesDir(Environment.DIRECTORY_MOVIES), APP_TAG+"/"+videoFileName);
-        Intent intent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
-        videoUri = Uri.fromFile(mediaFile);
-        intent.putExtra(MediaStore.EXTRA_OUTPUT, videoUri);
-        startActivityForResult(intent, VIDEO_CAPTURE);
+        File saveFolder = new File(getExternalFilesDir(Environment.DIRECTORY_MOVIES), APP_TAG);
+
+
+        new MaterialCamera(this)                       // Constructor takes an Activity
+                .allowRetry(true)                          // Whether or not 'Retry' is visible during playback
+                .autoSubmit(false)                         // Whether or not user is allowed to playback videos after recording. This can affect other things, discussed in the next section.
+                .saveDir(saveFolder)                       // The folder recorded videos are saved to
+                .primaryColorAttr(R.attr.colorPrimary)     // The theme color used for the camera, defaults to colorPrimary of Activity in the constructor
+                .showPortraitWarning(false)                 // Whether or not a warning is displayed if the user presses record in portrait orientation
+                .defaultToFrontFacing(true)               // Whether or not the camera will initially show the front facing camera
+                .retryExits(false)                         // If true, the 'Retry' button in the playback screen will exit the camera instead of going back to the recorder
+                .countdownSeconds(10)
+                .start(CAMERA_RQ);
     }
 
     public Uri getVideoFileUri(String fileName) {
@@ -88,15 +94,30 @@ public class DiscoveryActivity extends AppCompatActivity {
         return state.equals(Environment.MEDIA_MOUNTED);
     }
 
+
+
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == VIDEO_CAPTURE) {
+        super.onActivityResult(requestCode,resultCode,data);
+//        if (requestCode == VIDEO_CAPTURE) {
+//            if (resultCode == RESULT_OK) {
+//                Toast.makeText(this, "Video has been saved to:\n" + data.getData(), Toast.LENGTH_LONG).show();
+//                playbackRecordedVideo();
+//            } else if (resultCode == RESULT_CANCELED) {
+//                Toast.makeText(this, "Video recording cancelled.",  Toast.LENGTH_LONG).show();
+//            } else {
+//                Toast.makeText(this, "Failed to record video",  Toast.LENGTH_LONG).show();
+//            }
+//        }
+
+        if (requestCode == CAMERA_RQ) {
+
             if (resultCode == RESULT_OK) {
-                Toast.makeText(this, "Video has been saved to:\n" + data.getData(), Toast.LENGTH_LONG).show();
-                playbackRecordedVideo();
-            } else if (resultCode == RESULT_CANCELED) {
-                Toast.makeText(this, "Video recording cancelled.",  Toast.LENGTH_LONG).show();
-            } else {
-                Toast.makeText(this, "Failed to record video",  Toast.LENGTH_LONG).show();
+                Toast.makeText(this, "Saved to: " + data.getDataString(), Toast.LENGTH_LONG).show();
+//                playbackRecordedVideo();
+            } else if(data != null) {
+                Exception e = (Exception) data.getSerializableExtra(MaterialCamera.ERROR_EXTRA);
+                e.printStackTrace();
+                Toast.makeText(this, e.getMessage(), Toast.LENGTH_LONG).show();
             }
         }
     }
