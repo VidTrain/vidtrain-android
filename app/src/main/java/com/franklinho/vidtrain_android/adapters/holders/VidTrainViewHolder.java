@@ -10,7 +10,6 @@ import android.widget.TextView;
 
 import com.franklinho.vidtrain_android.R;
 import com.franklinho.vidtrain_android.activities.VidTrainDetailActivity;
-import com.franklinho.vidtrain_android.models.DynamicHeightVideoPlayerManagerView;
 import com.franklinho.vidtrain_android.models.VidTrain;
 
 import butterknife.Bind;
@@ -23,8 +22,8 @@ public class VidTrainViewHolder extends  RecyclerView.ViewHolder implements View
     public VidTrain vidTrain;
     @Bind(R.id.ivCollaborators)
     public ImageView ivCollaborators;
-    @Bind(R.id.vvPreview)
-    public DynamicHeightVideoPlayerManagerView vvPreview;
+//    @Bind(R.id.vvPreview)
+//    public DynamicHeightVideoPlayerManagerView vvPreview;
     @Bind(R.id.ibtnLike)
     public ImageButton ibtnLike;
     @Bind(R.id.tvLikeCount)

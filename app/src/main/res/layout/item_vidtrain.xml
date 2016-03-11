@@ -18,19 +18,19 @@
         android:layout_marginBottom="10dp"
         />
 
-    <com.franklinho.vidtrain_android.models.DynamicHeightVideoPlayerManagerView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/vvPreview"
-        android:layout_below="@+id/ivCollaborators"
-        android:background="@android:color/black"
-        />
+    <!--<com.franklinho.vidtrain_android.models.DynamicHeightVideoPlayerManagerView-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:id="@+id/vvPreview"-->
+        <!--android:layout_below="@+id/ivCollaborators"-->
+        <!--android:background="@android:color/black"-->
+        <!--/>-->
 
     <ImageButton
         android:layout_width="44dp"
         android:layout_height="44dp"
         android:src="@drawable/heart_icon"
-        android:layout_below="@id/vvPreview"
+        android:layout_below="@id/ivCollaborators"
         android:layout_marginTop="10dp"
         android:scaleType="centerInside"
         android:background="@android:color/transparent"

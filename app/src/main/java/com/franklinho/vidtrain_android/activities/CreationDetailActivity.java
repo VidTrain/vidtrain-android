@@ -14,7 +14,6 @@ import android.widget.Toast;
 import com.google.common.io.Files;
 
 import com.franklinho.vidtrain_android.R;
-import com.franklinho.vidtrain_android.models.DynamicHeightVideoPlayerManagerView;
 import com.franklinho.vidtrain_android.models.VidTrain;
 import com.franklinho.vidtrain_android.models.Video;
 import com.parse.ParseException;
@@ -22,11 +21,6 @@ import com.parse.ParseFile;
 import com.parse.ParseGeoPoint;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
-import com.volokh.danylo.video_player_manager.manager.PlayerItemChangeListener;
-import com.volokh.danylo.video_player_manager.manager.SingleVideoPlayerManager;
-import com.volokh.danylo.video_player_manager.manager.VideoPlayerManager;
-import com.volokh.danylo.video_player_manager.meta.MetaData;
-import com.volokh.danylo.video_player_manager.ui.SimpleMainThreadMediaPlayerListener;
 
 import java.io.File;
 import java.io.IOException;
@@ -36,7 +30,7 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 
 public class CreationDetailActivity extends AppCompatActivity {
-    @Bind(R.id.vvPreview) DynamicHeightVideoPlayerManagerView vvPreview;
+//    @Bind(R.id.vvPreview) DynamicHeightVideoPlayerManagerView vvPreview;
     @Bind(R.id.btnSubmit) Button btnSubmit;
     @Bind(R.id.spnReadPrivacy) Spinner spnReadPrivacy;
     @Bind(R.id.etTitle) EditText etTitle;
@@ -44,12 +38,12 @@ public class CreationDetailActivity extends AppCompatActivity {
 
     String videoPath;
 
-    private VideoPlayerManager<MetaData> mVideoPlayerManager = new SingleVideoPlayerManager(new PlayerItemChangeListener() {
-        @Override
-        public void onPlayerItemChanged(MetaData metaData) {
-
-        }
-    });
+//    private VideoPlayerManager<MetaData> mVideoPlayerManager = new SingleVideoPlayerManager(new PlayerItemChangeListener() {
+//        @Override
+//        public void onPlayerItemChanged(MetaData metaData) {
+//
+//        }
+//    });
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,16 +54,16 @@ public class CreationDetailActivity extends AppCompatActivity {
         Toast.makeText(this, "Video path: " + videoPath,
                 Toast.LENGTH_SHORT).show();
 
-        vvPreview.setHeightRatio(1);
+//        vvPreview.setHeightRatio(1);
 
         if (videoPath != null) {
-            vvPreview.addMediaPlayerListener(new SimpleMainThreadMediaPlayerListener() {
-                @Override
-                public void onVideoCompletionMainThread() {
-                    vvPreview.start();
-                }
-            });
-            mVideoPlayerManager.playNewVideo(null, vvPreview, videoPath);
+//            vvPreview.addMediaPlayerListener(new SimpleMainThreadMediaPlayerListener() {
+//                @Override
+//                public void onVideoCompletionMainThread() {
+//                    vvPreview.start();
+//                }
+//            });
+//            mVideoPlayerManager.playNewVideo(null, vvPreview, videoPath);
         }
     }
 

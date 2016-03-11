@@ -7,8 +7,6 @@ import com.parse.ParseFile;
 import com.parse.ParseGeoPoint;
 import com.parse.ParseObject;
 import com.parse.ParseUser;
-import com.volokh.danylo.video_player_manager.manager.VideoPlayerManager;
-import com.volokh.danylo.video_player_manager.meta.MetaData;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,7 +30,7 @@ public class VidTrain extends ParseObject {
     public String mDirectUrl;
     private final Rect mCurrentViewRect = new Rect();
 
-    public VideoPlayerManager<MetaData> mVideoPlayerManager;
+//    public VideoPlayerManager<MetaData> mVideoPlayerManager;
 
     public static final String USER_KEY = "user";
     public static final String TITLE_KEY = "title";

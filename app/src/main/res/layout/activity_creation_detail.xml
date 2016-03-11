@@ -10,13 +10,13 @@
 
     tools:context="com.franklinho.vidtrain_android.activities.CreationDetailActivity">
 
-    <com.franklinho.vidtrain_android.models.DynamicHeightVideoPlayerManagerView
-        android:layout_width="match_parent"
-        android:layout_height="300dp"
-        android:id="@+id/vvPreview"
-        android:layout_below="@+id/ivCollaborators"
-        android:background="@android:color/black"
-        />
+    <!--<com.franklinho.vidtrain_android.models.DynamicHeightVideoPlayerManagerView-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="300dp"-->
+        <!--android:id="@+id/vvPreview"-->
+        <!--android:layout_below="@+id/ivCollaborators"-->
+        <!--android:background="@android:color/black"-->
+        <!--/>-->
 
 
 
@@ -24,7 +24,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Title:"
-        android:layout_below="@id/vvPreview"
         android:layout_marginLeft="10dp"
         android:id="@+id/tvTitle"
         android:textSize="25dp"
@@ -40,7 +39,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/etTitle"
-        android:layout_below="@id/vvPreview"
         android:hint="Enter title here"
         android:layout_toRightOf="@id/tvTitle"
         android:layout_marginRight="10dp"

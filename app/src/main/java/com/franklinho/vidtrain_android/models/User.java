@@ -62,4 +62,8 @@ public class User extends ParseObject {
             e.printStackTrace();
         }
     }
+
+    public String getProfileImageUrl() {
+        return getString("profileImageUrl");
+    }
 }

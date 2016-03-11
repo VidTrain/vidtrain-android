@@ -64,17 +64,24 @@
             android:layout_toRightOf="@id/ivCollaborators"
             android:layout_marginLeft="10dp"/>
 
-        <com.franklinho.vidtrain_android.models.DynamicHeightVideoPlayerManagerView
-            android:layout_width="match_parent"
-            android:layout_height="300dp"
+        <!--<com.franklinho.vidtrain_android.models.DynamicHeightVideoPlayerManagerView-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="300dp"-->
+            <!--android:layout_below="@id/ivCollaborators"-->
+            <!--android:id="@+id/vvPreview"/>-->
+
+        <VideoView
+            android:layout_width="wrap_content"
+            android:layout_height="250dp"
+            android:id="@+id/videoView"
             android:layout_below="@id/ivCollaborators"
-            android:id="@+id/vvPreview"/>
+            />
 
         <ImageButton
             android:layout_width="44dp"
             android:layout_height="44dp"
             android:src="@drawable/heart_icon"
-            android:layout_below="@id/vvPreview"
+            android:layout_below="@id/videoView"
             android:layout_marginTop="10dp"
             android:scaleType="centerInside"
             android:background="@android:color/transparent"

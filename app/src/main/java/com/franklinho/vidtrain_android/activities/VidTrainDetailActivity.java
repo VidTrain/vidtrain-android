@@ -3,6 +3,8 @@ package com.franklinho.vidtrain_android.activities;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.media.MediaPlayer;
+import android.media.MediaPlayer.OnPreparedListener;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -12,17 +14,16 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.MediaController;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.VideoView;
+import com.google.common.io.Files;
 
 import com.bumptech.glide.Glide;
 import com.franklinho.vidtrain_android.R;
-import com.franklinho.vidtrain_android.models.DynamicHeightVideoPlayerManagerView;
 import com.franklinho.vidtrain_android.models.VidTrain;
 import com.franklinho.vidtrain_android.models.Video;
-import com.google.common.io.Files;
-import com.google.common.io.Resources;
-
 import com.parse.FindCallback;
 import com.parse.GetCallback;
 import com.parse.ParseException;
@@ -31,11 +32,6 @@ import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
-import com.volokh.danylo.video_player_manager.manager.PlayerItemChangeListener;
-import com.volokh.danylo.video_player_manager.manager.SingleVideoPlayerManager;
-import com.volokh.danylo.video_player_manager.manager.VideoPlayerManager;
-import com.volokh.danylo.video_player_manager.meta.MetaData;
-import com.volokh.danylo.video_player_manager.ui.SimpleMainThreadMediaPlayerListener;
 
 import java.io.File;
 import java.io.IOException;
@@ -47,7 +43,8 @@ import butterknife.ButterKnife;
 
 public class VidTrainDetailActivity extends AppCompatActivity {
     @Bind(R.id.ivCollaborators) ImageView ivCollaborators;
-    @Bind(R.id.vvPreview) DynamicHeightVideoPlayerManagerView vvPreview;
+//    @Bind(R.id.vvPreview) DynamicHeightVideoPlayerManagerView vvPreview;
+    @Bind(R.id.videoView) VideoView videoView;
     @Bind(R.id.ibtnLike) ImageButton ibtnLike;
     @Bind(R.id.tvLikeCount) TextView tvLikeCount;
     @Bind(R.id.tvCommentCount) TextView tvCommentCount;
@@ -57,12 +54,12 @@ public class VidTrainDetailActivity extends AppCompatActivity {
     public VidTrain vidTrain;
     private static final int VIDEO_CAPTURE = 101;
 
-    private VideoPlayerManager<MetaData> mVideoPlayerManager = new SingleVideoPlayerManager(new PlayerItemChangeListener() {
-        @Override
-        public void onPlayerItemChanged(MetaData metaData) {
-
-        }
-    });
+//    private VideoPlayerManager<MetaData> mVideoPlayerManager = new SingleVideoPlayerManager(new PlayerItemChangeListener() {
+//        @Override
+//        public void onPlayerItemChanged(MetaData metaData) {
+//
+//        }
+//    });
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,8 +67,8 @@ public class VidTrainDetailActivity extends AppCompatActivity {
         setContentView(R.layout.activity_vid_train_detail);
         ButterKnife.bind(this);
 
-        vvPreview.setHeightRatio(1);
-
+//        vvPreview.setHeightRatio(1);
+//        videoView.setVisibility(View.INVISIBLE);
         String vidTrainObjectID = getIntent().getExtras().getString("vidTrain");
         ParseQuery<VidTrain> query = ParseQuery.getQuery("VidTrain");
         query.whereEqualTo("objectId", vidTrainObjectID);
@@ -88,24 +85,44 @@ public class VidTrainDetailActivity extends AppCompatActivity {
                     vidTrain.getUser().fetchIfNeededInBackground(new GetCallback<ParseObject>() {
                         @Override
                         public void done(ParseObject object, ParseException e) {
-                            String profileImageUrl = ((ParseUser) vidTrain.getUser()).getString("profileImageUrl");
-                            Glide.with(getBaseContext()).load(profileImageUrl).into(ivCollaborators);
+                            String profileImageUrl = (vidTrain.getUser()).getString(
+                                    "profileImageUrl");
+                            Glide.with(getBaseContext()).load(profileImageUrl).into(
+                                    ivCollaborators);
                         }
                     });
 
+                    final ParseFile videoFile = ((ParseFile) vidTrain.get("thumbnail"));
+//                    videoView.setVideoURI(Uri.parse(videoFile.getUrl()));
+//                    String url = "http://techslides.com/demos/sample-videos/small.mp4";
+                    videoView.setVideoPath(videoFile.getUrl());
+                    MediaController mediaController = new MediaController(getApplicationContext());
+                    mediaController.setAnchorView(videoView);
 
-                    vvPreview.setHeightRatio(1);
-
-                    vvPreview.setVisibility(View.VISIBLE);
-                    vvPreview.addMediaPlayerListener(new SimpleMainThreadMediaPlayerListener() {
+//                    videoView.setVideoURI(Uri.parse(url));
+                    videoView.setMediaController(mediaController);
+                    videoView.requestFocus();
+//                    videoView.start();
+                    videoView.setOnPreparedListener(new OnPreparedListener() {
                         @Override
-                        public void onVideoCompletionMainThread() {
-                            vvPreview.start();
+                        public void onPrepared(MediaPlayer mp) {
+                            videoView.start();
                         }
                     });
 
 
-                    mVideoPlayerManager.playNewVideo(null, vvPreview, ((ParseFile) vidTrain.get("thumbnail")).getUrl());
+//                    vvPreview.setHeightRatio(1);
+//
+//                    vvPreview.setVisibility(View.VISIBLE);
+//                    vvPreview.addMediaPlayerListener(new SimpleMainThreadMediaPlayerListener() {
+//                        @Override
+//                        public void onVideoCompletionMainThread() {
+//                            vvPreview.start();
+//                        }
+//                    });
+//
+//
+//                    mVideoPlayerManager.playNewVideo(null, vvPreview, ((ParseFile) vidTrain.get("thumbnail")).getUrl());
                 } else {
                     invalidVidTrain();
                 }
