@@ -115,7 +115,7 @@ public class VidTrainArrayAdapter extends RecyclerView.Adapter<VidTrainViewHolde
 //        holder.vidTrain.mVideoPlayerManager = mVideoPlayerManager;
 //        holder.vidTrain.mDirectUrl = ((ParseFile) vidTrain.get("thumbnail")).getUrl();
 
-        final ParseFile parseFile = ((ParseFile) vidTrain.get("thumbnail"));
+        final ParseFile parseFile = vidTrain.getThumbnailFile();
 //        if (parseFile != null) {
 //            mVideoPlayerManager.playNewVideo(null, vvPreview, parseFile.getUrl());
 //        }
@@ -138,7 +138,7 @@ public class VidTrainArrayAdapter extends RecyclerView.Adapter<VidTrainViewHolde
                         @Override
                         public void onVideoCompletionMainThread() {
                             Toast.makeText(holder.context, "Video has been prepared from:\n" + parseFile.getUrl().toString() + "Video has been saved to :\n" + getOutputMediaFile(vidTrain.getObjectId().toString()), Toast.LENGTH_LONG).show();
-                            vvPreview.start();
+//                            vvPreview.start();
                         }
                     });
                     mVideoPlayerManager.playNewVideo(null, vvPreview, getOutputMediaFile(vidTrain.getObjectId().toString()).getPath());

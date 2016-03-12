@@ -93,4 +93,8 @@ public class VidTrain extends ParseObject implements Serializable {
         return (ParseUser) get(USER_KEY);
     }
 
+    public ParseFile getThumbnailFile() {
+        return (ParseFile) get(THUMBNAIL_KEY);
+    }
+
 }

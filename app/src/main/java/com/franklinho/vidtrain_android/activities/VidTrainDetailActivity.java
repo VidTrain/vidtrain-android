@@ -54,10 +54,14 @@ public class VidTrainDetailActivity extends AppCompatActivity {
     @Bind(R.id.tvLikeCount) TextView tvLikeCount;
     @Bind(R.id.tvCommentCount) TextView tvCommentCount;
     @Bind(R.id.tvVideoCount) TextView tvVideoCount;
+    int currentVideoIndex = 0;
+    boolean currentlyPlaying = false;
 
     Uri videoUri;
     public VidTrain vidTrain;
     ArrayList<Video> videos;
+    ArrayList<Boolean> videoDownloaded;
+
     private static final int VIDEO_CAPTURE = 101;
 
     private VideoPlayerManager<MetaData> mVideoPlayerManager = new SingleVideoPlayerManager(new PlayerItemChangeListener() {
@@ -72,6 +76,11 @@ public class VidTrainDetailActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_vid_train_detail);
         ButterKnife.bind(this);
+
+
+        videoDownloaded = new ArrayList<>();
+
+
 
         vvPreview.setHeightRatio(1);
 
@@ -99,7 +108,10 @@ public class VidTrainDetailActivity extends AppCompatActivity {
                     });
 
                     videos = vidTrain.getVideos();
+
+                    Log.d("VidTrain","Video array size: " + String.valueOf(videos.size()));
                     for (Video video : videos) {
+                        videoDownloaded.add(false);
                         try {
                             video.fetchIfNeeded();
                         } catch (ParseException parseException) {
@@ -118,70 +130,14 @@ public class VidTrainDetailActivity extends AppCompatActivity {
 //                        }
 //                    });
 
+                    if (vidTrain.get("videos") == null) {
+                        videos = new ArrayList<>();
+                    } else {
+                        videos = (ArrayList<Video>) vidTrain.get("videos");
+                    }
 
-                    final ParseFile parseFile = ((ParseFile) vidTrain.get("thumbnail"));
+                    playVideos();
 
-                    parseFile.getDataInBackground(new GetDataCallback() {
-                        @Override
-                        public void done(byte[] data, ParseException e) {
-                            try {
-//                                FileUtils.writeByteArrayToFile(getOutputMediaFile(vidTrain.getObjectId().toString()), data);
-
-                                File videoFile = getOutputMediaFile(vidTrain.getObjectId().toString());
-                                FileOutputStream out;
-
-                                out = new FileOutputStream(videoFile);
-                                out.write(data);
-                                out.close();
-
-                                vvPreview.addMediaPlayerListener(new SimpleMainThreadMediaPlayerListener() {
-                                    @Override
-                                    public void onVideoCompletionMainThread() {
-                                        Toast.makeText(getBaseContext(), "Video has been prepared from:\n" + parseFile.getUrl().toString() + "Video has been saved to :\n" + getOutputMediaFile(vidTrain.getObjectId().toString()), Toast.LENGTH_LONG).show();
-                                        vvPreview.start();
-                                    }
-                                });
-                                mVideoPlayerManager.playNewVideo(null, vvPreview, getOutputMediaFile(vidTrain.getObjectId().toString()).getPath());
-                            } catch (FileNotFoundException e1) {
-                                // TODO Auto-generated catch block
-                                e1.printStackTrace();
-                                Log.d("TAG", "Error: " + e1.toString());
-                            } catch (IOException ioe) {
-                                ioe.printStackTrace();
-                            }
-//                                vvPreview.setDataSource(getBaseContext(), getOutputMediaFileUri(vidTrain.getObjectId().toString()));
-//                                vvPreview.setVolume(0, 0);
-//                                vvPreview.setLooping(true);
-//                                vvPreview.prepare(new MediaPlayer.OnPreparedListener() {
-//                                    @Override
-//                                    public void onPrepared(MediaPlayer mp) {
-////                    vvPreview.start();
-//                                        Toast.makeText(getBaseContext(), "Video has been prepared from:\n" + parseFile.getUrl().toString() + "Video has been saved to :\n" + getOutputMediaFile(vidTrain.getObjectId().toString()), Toast.LENGTH_LONG).show();
-//
-//                                    }
-//                                });
-
-
-                        }
-                    });
-
-//                    ((ParseFile) vidTrain.get("thumbnail")).getDataInBackground(new GetDataCallback() {
-//                        @Override
-//                        public void done(byte[] data, ParseException e) {
-//                            File file = getOutputMediaFile();
-//                            try {
-//                                FileInputStream fis = new FileInputStream(file);
-//                                fis.read(data);
-//                                fis.close();
-//                                mVideoPlayerManager.playNewVideo(null, vvPreview,getAssets().openFd(getOutputMediaFile()).getFileDescriptor());
-//                            } catch (FileNotFoundException fnfe){
-//                                // do stuff here..
-//
-//                            } catch (IOException ioe){
-//
-//                            }
-//                        }
-//                    });
                 } else {
                     invalidVidTrain();
                 }
@@ -350,5 +306,104 @@ public class VidTrainDetailActivity extends AppCompatActivity {
         mediaFile = new File(mediaStorageDir.getPath() + File.separator +
                 "VID_CAPTURED" + objectId+ ".mp4");
         return mediaFile;
+    }
+
+
+    public void playVideos() {
+        for (int i = 0; i < videos.size(); i++ ) {
+            Video video = videos.get(i);
+
+            final ParseFile parseFile = video.getVideoFile();
+
+            video.fetchIfNeededInBackground(new GetCallback<ParseObject>() {
+                @Override
+                public void done(ParseObject object, ParseException e) {
+                    parseFile.getDataInBackground(new GetDataCallback() {
+                        @Override
+                        public void done(byte[] data, ParseException e) {
+                            try {
+//                                FileUtils.writeByteArrayToFile(getOutputMediaFile(vidTrain.getObjectId().toString()), data);
+
+                                File videoFile = getOutputMediaFile(String.valueOf(currentVideoIndex));
+                                FileOutputStream out;
+
+                                out = new FileOutputStream(videoFile);
+                                out.write(data);
+                                out.close();
+
+
+                                videoDownloaded.set(currentVideoIndex, true);
+
+                                if (currentVideoIndex == 0) {
+                                    vvPreview.addMediaPlayerListener(new SimpleMainThreadMediaPlayerListener() {
+                                        @Override
+                                        public void onVideoCompletionMainThread() {
+
+
+                                            playNextVideo();
+
+                                        }
+
+                                        @Override
+                                        public void onVideoPreparedMainThread() {
+//                                Toast.makeText(getBaseContext(), "Video has been prepared from:\n" + parseFile.getUrl().toString() + "Video has been saved to :\n" + getOutputMediaFile(vidTrain.getObjectId().toString()), Toast.LENGTH_LONG).show();
+
+
+                                        }
+
+
+
+
+                                    });
+                                    Toast.makeText(getBaseContext(), "queueing up video at index" + String.valueOf(currentVideoIndex), Toast.LENGTH_LONG).show();
+                                    mVideoPlayerManager.playNewVideo(null, vvPreview, getOutputMediaFile(String.valueOf(currentVideoIndex)).getPath());
+                                    currentlyPlaying = true;
+                                } else {
+                                    playBufferedVideo();
+                                }
+
+
+
+
+                            } catch (FileNotFoundException e1) {
+                                // TODO Auto-generated catch block
+                                e1.printStackTrace();
+                                Log.d("TAG", "Error: " + e1.toString());
+                            } catch (IOException ioe) {
+                                ioe.printStackTrace();
+                            }
+                        }
+                    });
+                }
+            });
+
+        }
+
+
+    }
+
+    public void playNextVideo() {
+        int nextIndex = currentVideoIndex + 1;
+        if (nextIndex <= videos.size()) {
+            Toast.makeText(getBaseContext(), "queueing up next video at index" + String.valueOf(nextIndex), Toast.LENGTH_LONG).show();
+
+            if ((Boolean) videoDownloaded.get(nextIndex)) {
+                mVideoPlayerManager.playNewVideo(null, vvPreview, getOutputMediaFile(String.valueOf(nextIndex)).getPath());
+                currentVideoIndex += 1;
+                currentlyPlaying = true;
+            } else {
+                currentlyPlaying = false;
+            }
+
+
+        }
+
+    }
+
+    public void playBufferedVideo() {
+        if (currentlyPlaying == false) {
+            playNextVideo();
+        }
+
     }
 }

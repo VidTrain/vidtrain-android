@@ -32,4 +32,6 @@ public class FragmentPagerAdapter extends android.support.v4.app.FragmentPagerAd
         // Generate title based on item position
         return tabTitles[position];
     }
+
+
 }
